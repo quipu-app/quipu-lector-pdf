@@ -1,0 +1,245 @@
+/* Marco marrón de la pantalla */
+.screen-bezel {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  margin: 0 8px;
+  background-color: var(--quipu-brown);
+  border: 3.5px solid var(--ink);
+  border-radius: 18px;
+  padding: 7px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 4px 0 rgba(0, 0, 0, 0.25);
+  z-index: 22;
+}
+
+@media (min-width: 640px) {
+  .screen-bezel {
+    margin: 0 18px;
+    border-radius: 22px;
+    padding: 10px;
+  }
+}
+
+.screen-inner {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  background-color: var(--quipu-brown-dark);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  padding: 4px;
+  display: flex;
+  overflow: hidden;
+}
+
+.screen-display {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  background-color: var(--quipu-screen);
+  border: 2.5px solid var(--ink);
+  border-radius: 9px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen-display.drag-over {
+  outline: 4px dashed var(--quipu-blue);
+  outline-offset: -8px;
+  background-color: #B4DDF0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Estado Inicial: Pantalla celeste limpia */
+.welcome-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.welcome-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  padding: 24px 22px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.welcome-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.35rem;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.welcome-sub {
+  font-size: 0.92rem;
+  color: #2B3A4A;
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Estado Activo: Visor de PDF */
+.viewer-state {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Barra superior dentro de la pantalla */
+.viewer-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: #AED7EC;
+  border-bottom: 2.5px solid var(--ink);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.topbar-left,
+.topbar-center,
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.doc-title {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--ink);
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 768px) {
+  .doc-title {
+    max-width: 220px;
+    font-size: 0.92rem;
+  }
+}
+
+.page-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.page-indicator input {
+  width: 44px;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 2px;
+  background: #FFFFFF;
+}
+
+.zoom-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  min-width: 40px;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* Área de desplazamiento donde se centra la hoja PDF */
+.pdf-scroll-area {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  overflow: auto;
+  padding: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  touch-action: pan-x pan-y;
+}
+
+.pdf-scroll-area::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.pdf-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--quipu-brown);
+  border-radius: 999px;
+  border: 2px solid var(--quipu-screen);
+}
+
+.page-wrapper {
+  position: relative;
+  display: inline-block;
+  background-color: #FFFFFF;
+  border: 2.5px solid var(--ink);
+  border-radius: 4px;
+  box-shadow: 0 8px 20px rgba(13, 17, 23, 0.22);
+  flex-shrink: 0;
+}
+
+#pdfCanvas {
+  display: block;
+}
+
+#annotationCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  touch-action: none;
+}
+
+#objectsLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Modos de lectura (Normal / Sepia / Noche) */
+.mode-sepia .page-wrapper {
+  filter: sepia(0.42) contrast(0.96) brightness(0.95);
+}
+
+.mode-night .page-wrapper {
+  filter: invert(0.88) hue-rotate(180deg) contrast(0.94);
+}

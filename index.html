@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quipu - Lector de PDF</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3B5E94">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+  <link rel="stylesheet" href="css/carcasa.css?v=2">
+  <link rel="stylesheet" href="css/pantalla.css?v=2">
+  <link rel="stylesheet" href="css/herramientas.css?v=2">
+</head>
+<body>
+
+  <main class="quipu-device" aria-label="Lector de PDF Quipu">
+
+    <!-- 4 Esquineros metálicos lisos con curvatura fiel a la carcasa -->
+    <svg class="corner corner-tl" viewBox="0 0 90 90" aria-hidden="true">
+      <defs>
+        <linearGradient id="quipuCornerMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#B0BDCB"/>
+          <stop offset="100%" stop-color="#7B8999"/>
+        </linearGradient>
+      </defs>
+      <path d="M 32 2 L 82 2 C 86 2 88 4 88 8 L 88 22 C 88 26 86 28 82 28 L 42 28 C 32 28 28 32 28 42 L 28 82 C 28 86 26 88 22 88 L 8 88 C 4 88 2 86 2 82 L 2 32 C 2 14 14 2 32 2 Z"
+            fill="url(#quipuCornerMetal)" stroke="#0D1117" stroke-width="4" stroke-linejoin="round"/>
+    </svg>
+    <svg class="corner corner-tr" viewBox="0 0 90 90" aria-hidden="true">
+      <path d="M 32 2 L 82 2 C 86 2 88 4 88 8 L 88 22 C 88 26 86 28 82 28 L 42 28 C 32 28 28 32 28 42 L 28 82 C 28 86 26 88 22 88 L 8 88 C 4 88 2 86 2 82 L 2 32 C 2 14 14 2 32 2 Z"
+            fill="url(#quipuCornerMetal)" stroke="#0D1117" stroke-width="4" stroke-linejoin="round"/>
+    </svg>
+    <svg class="corner corner-bl" viewBox="0 0 90 90" aria-hidden="true">
+      <path d="M 32 2 L 82 2 C 86 2 88 4 88 8 L 88 22 C 88 26 86 28 82 28 L 42 28 C 32 28 28 32 28 42 L 28 82 C 28 86 26 88 22 88 L 8 88 C 4 88 2 86 2 82 L 2 32 C 2 14 14 2 32 2 Z"
+            fill="url(#quipuCornerMetal)" stroke="#0D1117" stroke-width="4" stroke-linejoin="round"/>
+    </svg>
+    <svg class="corner corner-br" viewBox="0 0 90 90" aria-hidden="true">
+      <path d="M 32 2 L 82 2 C 86 2 88 4 88 8 L 88 22 C 88 26 86 28 82 28 L 42 28 C 32 28 28 32 28 42 L 28 82 C 28 86 26 88 22 88 L 8 88 C 4 88 2 86 2 82 L 2 32 C 2 14 14 2 32 2 Z"
+            fill="url(#quipuCornerMetal)" stroke="#0D1117" stroke-width="4" stroke-linejoin="round"/>
+    </svg>
+
+    <!-- Franjas laterales marrones -->
+    <div class="side-rail side-rail-left"></div>
+    <div class="side-rail side-rail-right"></div>
+
+    <!-- CABECERA: Lente óptica + Semáforo de 3 foquitos LED -->
+    <header class="device-header">
+      <div class="lens-group">
+        <div class="lens-outer">
+          <div class="lens-glass">
+            <div class="lens-glare-main"></div>
+            <div class="lens-glare-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="leds-group" aria-label="Indicadores de estado">
+        <span id="ledRed" class="led led-red" title="Iniciando / Cerrar"></span>
+        <span id="ledYellow" class="led led-yellow" title="Procesando / Guardando"></span>
+        <span id="ledGreen" class="led led-green" title="Guardado y listo"></span>
+      </div>
+    </header>
+
+    <!-- CUERPO CENTRAL: Pantalla celeste -->
+    <section class="screen-bezel">
+      <div class="screen-inner">
+        <div id="screenDisplay" class="screen-display">
+
+          <!-- Estado Inicial: Pantalla celeste limpia + Acceso a Carpetas -->
+          <div id="welcomeState" class="welcome-state">
+            <div class="welcome-card">
+              <p class="welcome-title">Abrí o arrastrá tu apunte PDF</p>
+              <p class="welcome-sub">Organizá tus apuntes en carpetas, subrayá, pegá post-its y guardá tu progreso en Quipu.</p>
+              <div class="welcome-actions">
+                <button id="btnOpenPdf" type="button" class="pill-btn pill-primary">
+                  📂 Abrir archivo PDF
+                </button>
+                <button id="btnOpenLibraryHome" type="button" class="pill-btn pill-yellow">
+                  🗂️ Mis Carpetas Quipu
+                </button>
+              </div>
+            </div>
+            <input type="file" id="fileInput" accept="application/pdf" class="hidden">
+            <input type="file" id="mergeFileInput" accept="application/pdf" class="hidden">
+          </div>
+
+          <!-- Estado Activo: Visor y Editor de PDF -->
+          <div id="viewerState" class="viewer-state hidden">
+
+            <!-- Barra Superior del Visor -->
+            <div class="viewer-topbar">
+              <div class="topbar-left">
+                <button id="btnToggleCartuchera" type="button" class="pill-btn pill-yellow" title="Mostrar/ocultar cartuchera">
+                  ✏️ Cartuchera
+                </button>
+                <button id="btnOpenLibraryViewer" type="button" class="pill-btn pill-secondary" title="Abrir biblioteca de carpetas">
+                  🗂️ Carpetas
+                </button>
+                <span id="docTitle" class="doc-title" title="Nombre del archivo">Documento.pdf</span>
+              </div>
+
+              <div class="topbar-center">
+                <button id="btnPrevPage" type="button" class="icon-btn" title="Página anterior">◀</button>
+                <span class="page-indicator">
+                  <input id="pageInput" type="number" min="1" value="1" aria-label="Número de página">
+                  <span>/ <strong id="pageCount">1</strong></span>
+                </span>
+                <button id="btnNextPage" type="button" class="icon-btn" title="Página siguiente">▶</button>
+              </div>
+
+              <div class="topbar-right">
+                <button id="btnZoomOut" type="button" class="icon-btn" title="Alejar">−</button>
+                <span id="zoomLabel" class="zoom-label">100%</span>
+                <button id="btnZoomIn" type="button" class="icon-btn" title="Acercar">+</button>
+                <button id="btnSaveInternal" type="button" class="pill-btn pill-green" title="Guardar en tus carpetas de Quipu">
+                  💾 Guardar
+                </button>
+                <button id="btnDownloadPdf" type="button" class="pill-btn pill-primary" title="Descargar archivo PDF modificado a tu dispositivo">
+                  ⬇️ Descargar
+                </button>
+                <button id="btnOpenSettings" type="button" class="icon-btn" title="Opciones y actualizaciones">
+                  ⚙️
+                </button>
+              </div>
+            </div>
+
+            <!-- Cartuchera Desplegable de Estudio -->
+            <div id="cartucheraBar" class="cartuchera-bar">
+              <button type="button" class="tool-btn active" data-tool="pan">🖐️ Mover</button>
+              <button type="button" class="tool-btn" data-tool="highlight">🖍️ Resaltar</button>
+              <button type="button" class="tool-btn" data-tool="underline">📏 Subrayar</button>
+              <button type="button" class="tool-btn" data-tool="pen">✒️ Lápiz</button>
+              <button type="button" class="tool-btn" data-tool="postit">📝 Post-it</button>
+              <button type="button" class="tool-btn" data-tool="text">🔤 Texto</button>
+              <button type="button" class="tool-btn" data-tool="sticker">🏷️ Sticker</button>
+              <button type="button" class="tool-btn" data-tool="recall">🙈 Tapar</button>
+              <button type="button" class="tool-btn" data-tool="eraser">🧹 Borrar</button>
+
+              <div class="color-palette" aria-label="Colores">
+                <button type="button" class="color-dot active" data-color="#F4C430" style="background:#F4C430"></button>
+                <button type="button" class="color-dot" data-color="#6CE04B" style="background:#6CE04B"></button>
+                <button type="button" class="color-dot" data-color="#FF7EB9" style="background:#FF7EB9"></button>
+                <button type="button" class="color-dot" data-color="#58B4E3" style="background:#58B4E3"></button>
+                <button type="button" class="color-dot" data-color="#E24943" style="background:#E24943"></button>
+              </div>
+
+              <select id="strokeSizeSelect" class="mini-select" title="Grosor">
+                <option value="2">Fino</option>
+                <option value="5" selected>Medio</option>
+                <option value="14">Grueso</option>
+              </select>
+
+              <select id="stickerSelect" class="mini-select hidden" title="Elegir sticker">
+                <option value="¡Entra en el parcial!">🔥 ¡Parcial!</option>
+                <option value="Definición clave">📌 Definición</option>
+                <option value="Repasar esto">🔄 Repasar</option>
+                <option value="Duda / Consultar">❓ Duda</option>
+                <option value="Fórmula importante">📐 Fórmula</option>
+              </select>
+
+              <button id="btnUndo" type="button" class="icon-btn" title="Deshacer (Ctrl+Z)">↩️</button>
+            </div>
+
+            <!-- Área de desplazamiento donde vive la hoja PDF -->
+            <div id="pdfScrollArea" class="pdf-scroll-area">
+              <div id="pageWrapper" class="page-wrapper">
+                <canvas id="pdfCanvas"></canvas>
+                <canvas id="annotationCanvas"></canvas>
+                <div id="objectsLayer"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PIE DE CARCASA: Botón rojo liso + Placa Quipu + 3 ranuras -->
+    <footer class="device-footer">
+      <div class="footer-left">
+        <button id="btnCloseDoc" type="button" class="red-close-btn" title="Cerrar PDF actual" aria-label="Cerrar PDF actual"></button>
+      </div>
+
+      <div class="footer-center">
+        <div class="quipu-badge" aria-label="Marca Quipu">
+          <svg class="quipu-logo-svg" viewBox="0 0 210 66" role="img" aria-label="Quipu">
+            <rect x="3" y="3" width="204" height="60" rx="14" fill="#6FA9DC" stroke="#0D1117" stroke-width="4.5"/>
+            <rect x="9" y="9" width="192" height="48" rx="10" fill="#5B95C9" stroke="#223F61" stroke-width="2.5"/>
+            <text x="105" y="45" text-anchor="middle" class="quipu-svg-text">Quipu</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="footer-right">
+        <div id="speakerGrille" class="speaker-grille" title="Leer página en voz alta" role="button" tabindex="0">
+          <span class="speaker-slot"></span>
+          <span class="speaker-slot"></span>
+          <span class="speaker-slot"></span>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- MODAL DE MIS CARPETAS Y GUARDADO INTERNO EN QUIPU -->
+  <div id="libraryModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="libModalTitle">
+    <div class="modal-card modal-card-wide">
+      <div class="modal-header">
+        <h2 id="libModalTitle">🗂️ Biblioteca de Carpetas Quipu</h2>
+        <button id="btnCloseLibraryModal" type="button" class="icon-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Ruta actual (Breadcrumbs) + Crear Subcarpeta -->
+        <div class="folder-toolbar">
+          <div id="folderBreadcrumb" class="folder-breadcrumb">🏠 Inicio</div>
+          <div class="btn-row">
+            <button id="btnNewFolder" type="button" class="pill-btn pill-yellow">📁+ Nueva subcarpeta</button>
+            <button id="btnSaveHere" type="button" class="pill-btn pill-green hidden">💾 Guardar PDF acá</button>
+          </div>
+        </div>
+
+        <!-- Lista de subcarpetas y archivos guardados -->
+        <div id="libraryList" class="library-list"></div>
+      </div>
+
+      <div class="modal-footer-credit">
+        Desarrollado por <strong>Quipu Estudio</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIGURACIÓN, GESTIÓN DE PÁGINAS Y ACTUALIZACIONES -->
+  <div id="settingsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle">⚙️ Opciones y Herramientas</h2>
+        <button id="btnCloseModal" type="button" class="icon-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-section">
+          <h3>👁️ Modo de lectura</h3>
+          <div class="btn-row">
+            <button type="button" class="pill-btn mode-btn active" data-mode="normal">☀️ Normal</button>
+            <button type="button" class="pill-btn mode-btn" data-mode="sepia">📜 Sepia</button>
+            <button type="button" class="pill-btn mode-btn" data-mode="night">🌙 Noche</button>
+            <button id="btnReadAloudModal" type="button" class="pill-btn">🔊 Leer en voz alta</button>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h3>📄 Organización de páginas</h3>
+          <div class="btn-row">
+            <button id="btnAddRuledPage" type="button" class="pill-btn">➕ Hoja rayada</button>
+            <button id="btnRotatePage" type="button" class="pill-btn">🔄 Rotar 90°</button>
+            <button id="btnMergePdf" type="button" class="pill-btn">📎 Unir otro PDF</button>
+            <button id="btnDeletePage" type="button" class="pill-btn pill-danger">🗑️ Eliminar página</button>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h3>🚀 Sistema y Actualizaciones</h3>
+          <p class="version-info">Versión instalada: <strong id="currentVersionLabel">1.0.0</strong></p>
+          <div class="btn-row">
+            <button id="btnCheckUpdates" type="button" class="pill-btn pill-primary">🔄 Buscar actualizaciones</button>
+          </div>
+          <p id="updateStatusText" class="update-status"></p>
+        </div>
+      </div>
+
+      <div class="modal-footer-credit">
+        Desarrollado por <strong>Quipu Estudio</strong>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/almacenamiento.js?v=2"></script>
+  <script src="js/pdf-visor.js?v=2"></script>
+  <script src="js/cartuchera.js?v=2"></script>
+  <script src="js/paginas-manager.js?v=2"></script>
+  <script src="js/exportar-pdf.js?v=2"></script>
+  <script src="js/actualizador.js?v=2"></script>
+  <script src="js/app.js?v=2"></script>
+</body>
+</html>

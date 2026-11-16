@@ -1,0 +1,451 @@
+/* Botones estilo Quipu */
+.pill-btn {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background-color: #FFFFFF;
+  color: var(--ink);
+  box-shadow: 0 2px 0 var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+}
+
+.pill-btn:active {
+  transform: translateY(1.5px);
+  box-shadow: 0 0.5px 0 var(--ink);
+}
+
+.pill-primary {
+  background-color: #4D74B0;
+  color: #FFFFFF;
+}
+
+.pill-secondary {
+  background-color: #E8F4FA;
+  color: var(--ink);
+}
+
+.pill-yellow {
+  background-color: #F4C430;
+  color: var(--ink);
+}
+
+.pill-green {
+  background-color: #6CE04B;
+  color: var(--ink);
+}
+
+.pill-danger {
+  background-color: #E24943;
+  color: #FFFFFF;
+}
+
+.icon-btn {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: var(--ink);
+  box-shadow: 0 2px 0 var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:active {
+  transform: translateY(1.5px);
+  box-shadow: 0 0.5px 0 var(--ink);
+}
+
+/* Cartuchera de Estudio */
+.cartuchera-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  background-color: #E3F3FB;
+  border-bottom: 2.5px solid var(--ink);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.tool-btn {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.76rem;
+  padding: 4px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background-color: #FFFFFF;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tool-btn.active {
+  background-color: #F4C430;
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.tool-divider {
+  width: 2px;
+  height: 22px;
+  background-color: rgba(13, 17, 23, 0.25);
+  flex-shrink: 0;
+}
+
+.color-palette {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.color-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.color-dot.active {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--ink);
+}
+
+.mini-select {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.78rem;
+  padding: 4px 6px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* Elementos flotantes sobre la hoja PDF (Post-its, Textos, Stickers, Cinta Repaso) */
+.anno-object {
+  position: absolute;
+  pointer-events: auto;
+  user-select: none;
+}
+
+/* Post-it plegable */
+.sticky-note-card {
+  min-width: 150px;
+  max-width: 220px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: 2px 3px 0 var(--ink);
+  overflow: hidden;
+  font-family: 'Nunito', sans-serif;
+}
+
+.sticky-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 7px;
+  background: rgba(0, 0, 0, 0.12);
+  border-bottom: 1.5px solid var(--ink);
+  cursor: grab;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.sticky-note-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.sticky-mini-btn {
+  background: #FFFFFF;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0 4px;
+  cursor: pointer;
+}
+
+.sticky-note-body {
+  width: 100%;
+  min-height: 75px;
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+  resize: both;
+  outline: none;
+}
+
+.sticky-note-pin {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  box-shadow: 1px 2px 0 var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* Texto libre sobre el PDF */
+.free-text-box {
+  min-width: 90px;
+  padding: 3px 6px;
+  border: 1.5px dashed rgba(13, 17, 23, 0.45);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.75);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: move;
+  outline: none;
+}
+
+/* Sticker de estudio */
+.study-sticker {
+  padding: 4px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.82rem;
+  box-shadow: 2px 2px 0 var(--ink);
+  cursor: grab;
+  white-space: nowrap;
+}
+
+/* Cinta correctora / Modo Active Recall */
+.recall-tape {
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  box-shadow: 1px 2px 0 var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: rgba(13, 17, 23, 0.65);
+  transition: opacity 0.2s ease;
+}
+
+.recall-tape.peeked {
+  opacity: 0.18;
+}
+
+/* Modal de Configuración, Páginas y Actualizaciones */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 16, 23, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.modal-card {
+  background: #F4FAFD;
+  border: 3.5px solid var(--ink);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 0 var(--ink);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #AED7EC;
+  border-bottom: 2.5px solid var(--ink);
+}
+
+.modal-header h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.modal-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 75dvh;
+  overflow-y: auto;
+}
+
+.modal-section h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.98rem;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mode-btn.active {
+  background-color: #F4C430;
+}
+
+.version-info {
+  font-size: 0.88rem;
+  margin-bottom: 8px;
+  color: #2B3A4A;
+}
+
+.update-status {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #2C4875;
+}
+
+/* Pie de créditos en Configuración */
+.modal-footer-credit {
+  padding: 10px 16px;
+  text-align: center;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.4px;
+  color: #2C4875;
+  background-color: #E3F3FB;
+  border-top: 2px solid var(--ink);
+}
+
+/* Biblioteca de Carpetas y Subcarpetas */
+.modal-card-wide {
+  max-width: 580px;
+}
+
+.folder-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 2px dashed rgba(13, 17, 23, 0.2);
+}
+
+.folder-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+.crumb-btn {
+  background: none;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: #2C4875;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.library-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 150px;
+}
+
+.lib-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  background: #FFFFFF;
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.lib-item-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.lib-item-title {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lib-item-meta {
+  font-size: 0.75rem;
+  color: #526477;
+}
+
+.lib-empty {
+  text-align: center;
+  padding: 28px 12px;
+  color: #526477;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* Pie de créditos en Configuración */
+.modal-footer-credit {
+  padding: 10px 16px;
+  text-align: center;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.4px;
+  color: #2C4875;
+  background-color: #E3F3FB;
+  border-top: 2px solid var(--ink);
+}
