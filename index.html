@@ -301,5 +301,13 @@
   <script src="js/exportar-pdf.js?v=2"></script>
   <script src="js/actualizador.js?v=2"></script>
   <script src="js/app.js?v=2"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .catch((err) => console.warn('Error registrando SW:', err));
+      });
+    }
+  </script>
 </body>
 </html>
