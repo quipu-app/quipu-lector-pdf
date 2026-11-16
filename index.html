@@ -6,7 +6,7 @@
   <title>Quipu - Lector de PDF</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#3B5E94">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <link rel="stylesheet" href="css/carcasa.css?v=2">
   <link rel="stylesheet" href="css/pantalla.css?v=2">
@@ -228,6 +229,15 @@
           </div>
         </div>
 
+        <!-- Barra de Sincronización con Google Drive -->
+        <div class="drive-sync-bar" style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; padding:8px 10px; background:#F0F8FF; border:2px solid #0D1117; border-radius:12px; flex-wrap:wrap;">
+          <span id="driveStatusText" style="font-size:0.84rem; font-weight:800; color:#0D1117;">☁️ Nube: Desconectado</span>
+          <div class="btn-row">
+            <button id="btnConnectDrive" type="button" class="pill-btn pill-primary">🔗 Conectar Drive</button>
+            <button id="btnSyncDrive" type="button" class="pill-btn pill-green hidden">🔄 Sincronizar ahora</button>
+          </div>
+        </div>
+
         <!-- Lista de subcarpetas y archivos guardados -->
         <div id="libraryList" class="library-list"></div>
       </div>
@@ -284,6 +294,7 @@
   </div>
 
   <script src="js/almacenamiento.js?v=2"></script>
+  <script src="js/google-drive.js?v=1"></script>
   <script src="js/pdf-visor.js?v=2"></script>
   <script src="js/cartuchera.js?v=2"></script>
   <script src="js/paginas-manager.js?v=2"></script>

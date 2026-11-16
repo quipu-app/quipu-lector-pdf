@@ -58,6 +58,36 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.QuipuCartuchera.init();
   await window.QuipuUpdater.init();
 
+  // Inicializar Google Drive Sync
+  const btnConnectDrive = document.getElementById('btnConnectDrive');
+  const btnSyncDrive = document.getElementById('btnSyncDrive');
+  const driveStatusText = document.getElementById('driveStatusText');
+
+  if (window.QuipuDrive) {
+    window.QuipuDrive.init((connected) => {
+      if (connected) {
+        driveStatusText.textContent = '☁️ Drive: Conectado';
+        btnConnectDrive.classList.add('hidden');
+        btnSyncDrive.classList.remove('hidden');
+        btnSyncDrive.click(); // Sincroniza automáticamente al conectar
+      }
+    });
+
+    btnConnectDrive.addEventListener('click', () => window.QuipuDrive.signIn());
+
+    btnSyncDrive.addEventListener('click', async () => {
+      try {
+        driveStatusText.textContent = '🔄 Sincronizando...';
+        await window.QuipuDrive.syncAll();
+        driveStatusText.textContent = '✅ Sincronizado con Drive';
+        await renderLibraryView();
+      } catch (err) {
+        console.error(err);
+        driveStatusText.textContent = '⚠️ Error al sincronizar';
+      }
+    });
+  }
+
   async function openDocumentBytes(bytes, name, savedAnnotations = null, startPage = 1, docMeta = null) {
     window.runQuipuTrafficLight(260);
     currentDocId = docMeta ? docMeta.id : null;
