@@ -11,6 +11,7 @@ window.QuipuVisor = (() => {
     currentPage: 1,
     totalPages: 1,
     zoom: 1.0,
+    zoomManual: false, // true cuando el usuario eligió el zoom a mano
     annotations: {}, // { pageNum: { strokes: [], objects: [] } }
     isSpeaking: false
   };
@@ -36,6 +37,7 @@ window.QuipuVisor = (() => {
     document.getElementById('pageCount').textContent = state.totalPages;
     document.getElementById('pageInput').max = state.totalPages;
 
+    state.zoomManual = false;
     await fitToScreenWidth();
     await renderCurrentPage();
     persistNow();
@@ -67,21 +69,28 @@ window.QuipuVisor = (() => {
     const annoCanvas = document.getElementById('annotationCanvas');
     const pageWrapper = document.getElementById('pageWrapper');
 
-    pageWrapper.style.width = `${viewport.width}px`;
-    pageWrapper.style.height = `${viewport.height}px`;
+    // Tamaño en píxeles reales de la pantalla, redondeado, y el tamaño visible sale de ahí:
+    // así cada píxel del dibujo cae justo en un píxel de la pantalla y la letra se ve nítida
+    const anchoPx = Math.round(viewport.width * dpr);
+    const altoPx = Math.round(viewport.height * dpr);
+    const anchoCss = `${anchoPx / dpr}px`;
+    const altoCss = `${altoPx / dpr}px`;
 
-    pdfCanvas.width = Math.floor(viewport.width * dpr);
-    pdfCanvas.height = Math.floor(viewport.height * dpr);
-    pdfCanvas.style.width = `${viewport.width}px`;
-    pdfCanvas.style.height = `${viewport.height}px`;
+    pageWrapper.style.width = anchoCss;
+    pageWrapper.style.height = altoCss;
 
-    annoCanvas.width = Math.floor(viewport.width * dpr);
-    annoCanvas.height = Math.floor(viewport.height * dpr);
-    annoCanvas.style.width = `${viewport.width}px`;
-    annoCanvas.style.height = `${viewport.height}px`;
+    pdfCanvas.width = anchoPx;
+    pdfCanvas.height = altoPx;
+    pdfCanvas.style.width = anchoCss;
+    pdfCanvas.style.height = altoCss;
+
+    annoCanvas.width = anchoPx;
+    annoCanvas.height = altoPx;
+    annoCanvas.style.width = anchoCss;
+    annoCanvas.style.height = altoCss;
 
     const ctx = pdfCanvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.setTransform(anchoPx / viewport.width, 0, 0, altoPx / viewport.height, 0, 0);
 
     await page.render({ canvasContext: ctx, viewport }).promise;
 
@@ -101,12 +110,59 @@ window.QuipuVisor = (() => {
     persistNow();
   }
 
+  // Escalones de zoom fijos: desde cualquier valor, "+" va al siguiente y "−" al anterior
+  const NIVELES_ZOOM = [0.5, 0.6, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5];
+
   async function changeZoom(delta) {
     if (!state.pdfDoc) return;
-    state.zoom = Math.min(Math.max(0.4, +(state.zoom + delta).toFixed(2)), 2.5);
+    const actual = state.zoom;
+    const siguiente = delta > 0
+      ? NIVELES_ZOOM.find((n) => n > actual + 0.01)
+      : [...NIVELES_ZOOM].reverse().find((n) => n < actual - 0.01);
+    if (!siguiente) return;
+
+    // Mantener a la vista la misma parte de la hoja al cambiar el zoom
+    const area = document.getElementById('pdfScrollArea');
+    const proporcionX = area.scrollWidth > area.clientWidth ? (area.scrollLeft + area.clientWidth / 2) / area.scrollWidth : 0.5;
+    const proporcionY = (area.scrollTop + area.clientHeight / 2) / Math.max(1, area.scrollHeight);
+
+    state.zoom = siguiente;
+    state.zoomManual = true;
     updateZoomLabel();
     await renderCurrentPage();
+
+    area.scrollLeft = proporcionX * area.scrollWidth - area.clientWidth / 2;
+    area.scrollTop = proporcionY * area.scrollHeight - area.clientHeight / 2;
   }
+
+  // Vuelve a "ajustar al ancho" (por ejemplo, al tocar el porcentaje)
+  async function ajustarAlAncho() {
+    if (!state.pdfDoc) return;
+    state.zoomManual = false;
+    await fitToScreenWidth();
+    await renderCurrentPage();
+  }
+
+  // Al girar la tablet o cambiar el tamaño de la ventana, la hoja se reacomoda al ancho
+  // (salvo que el usuario haya elegido un zoom a mano)
+  let esperaGiro = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(esperaGiro);
+    esperaGiro = setTimeout(() => {
+      if (state.pdfDoc && !state.zoomManual) ajustarAlAncho();
+    }, 250);
+  });
+
+  function prepararEtiquetaZoom() {
+    const lbl = document.getElementById('zoomLabel');
+    if (lbl) {
+      lbl.style.cursor = 'pointer';
+      lbl.title = 'Tocá para ajustar la hoja al ancho';
+      lbl.addEventListener('click', ajustarAlAncho);
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepararEtiquetaZoom);
+  else prepararEtiquetaZoom();
 
   async function toggleReadAloud() {
     if (!state.pdfDoc || !('speechSynthesis' in window)) return;
@@ -145,7 +201,7 @@ window.QuipuVisor = (() => {
   }
 
   function persistNow() {
-        // Resto de una versión anterior: el guardado real lo hace el botón Guardar
+    // Resto de una versión anterior: el guardado real lo hace el botón Guardar
     if (!state.pdfBytes || typeof window.QuipuStorage.saveSession !== 'function') return;
     window.QuipuStorage.saveSession({
       pdfBytes: state.pdfBytes,
@@ -162,6 +218,7 @@ window.QuipuVisor = (() => {
     renderCurrentPage,
     goToPage,
     changeZoom,
+    ajustarAlAncho,
     toggleReadAloud,
     stopSpeech,
     persistNow
