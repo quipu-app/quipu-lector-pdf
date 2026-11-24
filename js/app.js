@@ -63,7 +63,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnSyncDrive = document.getElementById('btnSyncDrive');
   const driveStatusText = document.getElementById('driveStatusText');
 
-  window.QuipuDrive.init((connected) => {
+    if (window.QuipuDrive) {
+    window.QuipuDrive.init((connected) => {
       if (connected) {
         driveStatusText.textContent = '☁️ Drive: Conectado';
         btnConnectDrive.classList.add('hidden');
