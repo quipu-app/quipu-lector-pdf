@@ -503,3 +503,32 @@
     padding: 6px;
   }
 }
+
+/* ===== Lectura cómoda: zoom y tablet parada ===== */
+
+/* La hoja se centra con márgenes automáticos: al hacer zoom se puede llegar a los dos bordes */
+.pdf-scroll-area {
+  justify-content: flex-start;
+}
+.page-wrapper {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Tablet parada: carcasa más angosta a los costados, para que la hoja se vea más grande */
+@media (pointer: coarse) and (orientation: portrait) and (min-width: 640px) {
+  .quipu-device {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .side-rail {
+    width: 8px;
+  }
+  .screen-bezel {
+    margin: 0 6px;
+    padding: 6px;
+  }
+  .pdf-scroll-area {
+    padding: 6px;
+  }
+}
