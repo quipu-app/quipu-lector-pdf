@@ -63,13 +63,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnSyncDrive = document.getElementById('btnSyncDrive');
   const driveStatusText = document.getElementById('driveStatusText');
 
-  if (window.QuipuDrive) {
-    window.QuipuDrive.init((connected) => {
+  window.QuipuDrive.init((connected) => {
       if (connected) {
         driveStatusText.textContent = '☁️ Drive: Conectado';
         btnConnectDrive.classList.add('hidden');
         btnSyncDrive.classList.remove('hidden');
         btnSyncDrive.click(); // Sincroniza automáticamente al conectar
+      } else {
+        // La sesión de Google venció: vuelve a mostrar el botón para conectar
+        btnConnectDrive.classList.remove('hidden');
+        btnSyncDrive.classList.add('hidden');
       }
     });
 
