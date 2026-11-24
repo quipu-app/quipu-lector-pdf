@@ -142,7 +142,44 @@ window.QuipuDrive = (() => {
     });
     return remoteDoc;
   }
+  // Acceso directo a la base del equipo, por si este equipo todavía tiene
+  // guardado un almacenamiento.js viejo (sin getAllDocuments ni saveFolderRecord)
+  function abrirBase() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('QuipuDB_v3');
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
 
+  async function todosLosDocumentos() {
+    if (typeof window.QuipuStorage.getAllDocuments === 'function') {
+      return window.QuipuStorage.getAllDocuments();
+    }
+    const db = await abrirBase();
+    return new Promise((resolve) => {
+      const req = db.transaction('documents', 'readonly').objectStore('documents').getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => resolve([]);
+    });
+  }
+
+  async function guardarCarpetaConSuId(folder) {
+    if (typeof window.QuipuStorage.saveFolderRecord === 'function') {
+      return window.QuipuStorage.saveFolderRecord(folder);
+    }
+    const db = await abrirBase();
+    return new Promise((resolve, reject) => {
+      const req = db.transaction('folders', 'readwrite').objectStore('folders').put({
+        id: folder.id,
+        name: folder.name,
+        parentId: folder.parentId || 'root',
+        createdAt: folder.createdAt || new Date().toLocaleDateString('es-AR')
+      });
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
   // Sincronización en las dos direcciones (Carpetas + PDFs + Post-its y Subrayados)
   async function syncAll() {
     if (!accessToken) throw new Error('No conectado a Google Drive');
@@ -163,7 +200,7 @@ window.QuipuDrive = (() => {
     // 2. Juntar carpetas: las que faltan acá se crean CON EL MISMO ID que en Drive,
     //    así los apuntes que viven adentro aparecen en su lugar
     let localFolders = await window.QuipuStorage.getAllFolders();
-    const localDocs = await window.QuipuStorage.getAllDocuments();
+    const localDocs = await todosLosDocumentos();
     const idsRemotos = new Set(remoteFolders.map((f) => f.id));
 
     // Limpia carpetas repetidas que dejó la versión anterior: vacías, con el mismo
@@ -182,7 +219,7 @@ window.QuipuDrive = (() => {
 
     for (const rf of remoteFolders) {
       if (!idsLocales.has(rf.id)) {
-        await window.QuipuStorage.saveFolderRecord(rf);
+          await guardarCarpetaConSuId(rf);
       }
     }
 
