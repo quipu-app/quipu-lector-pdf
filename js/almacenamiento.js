@@ -168,7 +168,32 @@ window.QuipuStorage = (() => {
       tx.oncomplete = () => resolve(true);
     });
   }
+  // Guarda una carpeta tal cual viene (con su mismo ID), para la sincronización con Drive
+  async function saveFolderRecord(folder) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_FOLDERS, 'readwrite');
+      const req = tx.objectStore(STORE_FOLDERS).put({
+        id: folder.id,
+        name: folder.name,
+        parentId: folder.parentId || 'root',
+        createdAt: folder.createdAt || new Date().toLocaleDateString('es-AR')
+      });
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
 
+  // Todos los documentos, estén en la carpeta que estén
+  async function getAllDocuments() {
+    const db = await openDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction(STORE_DOCS, 'readonly');
+      const req = tx.objectStore(STORE_DOCS).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => resolve([]);
+    });
+  }
   return {
     createFolder,
     renameFolder,
