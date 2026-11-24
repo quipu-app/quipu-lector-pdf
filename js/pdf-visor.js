@@ -145,7 +145,8 @@ window.QuipuVisor = (() => {
   }
 
   function persistNow() {
-    if (!state.pdfBytes) return;
+        // Resto de una versión anterior: el guardado real lo hace el botón Guardar
+    if (!state.pdfBytes || typeof window.QuipuStorage.saveSession !== 'function') return;
     window.QuipuStorage.saveSession({
       pdfBytes: state.pdfBytes,
       fileName: state.fileName,
