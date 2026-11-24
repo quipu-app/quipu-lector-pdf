@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } catch (err) {
         console.error(err);
         driveStatusText.textContent = window.QuipuDrive.isConnected()
-          ? '⚠️ Error al sincronizar'
+          ? '⚠️ Error al sincronizar: ' + (err && err.message ? err.message : err)
           : '⚠️ La sesión de Google venció: volvé a conectar';
       }
     });
