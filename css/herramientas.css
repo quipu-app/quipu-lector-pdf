@@ -449,3 +449,57 @@
   background-color: #E3F3FB;
   border-top: 2px solid var(--ink);
 }
+
+
+/* ===== Pantallas grandes y tablets en horizontal ===== */
+
+/* Compu en pantalla completa: la carcasa ocupa todo el ancho disponible */
+@media (min-width: 1200px) {
+  .quipu-device {
+    max-width: none;
+  }
+}
+
+/* Tablet o compu acostada (pantalla baja): carcasa más finita y barras en una sola fila */
+@media (orientation: landscape) and (min-width: 640px) and (max-height: 820px) {
+  .quipu-device {
+    padding: 8px 22px 8px;
+  }
+  .device-header,
+  .device-footer {
+    zoom: 0.7;
+  }
+  svg.corner {
+    width: 58px;
+    height: 58px;
+  }
+  .side-rail {
+    top: 52px;
+    bottom: 52px;
+  }
+  .viewer-topbar,
+  .cartuchera-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .viewer-topbar::-webkit-scrollbar,
+  .cartuchera-bar::-webkit-scrollbar {
+    display: none;
+  }
+  .viewer-topbar > *,
+  .cartuchera-bar > * {
+    flex-shrink: 0;
+  }
+}
+
+/* Pantallas muy bajas (tablets chicas acostadas): todavía más finita */
+@media (orientation: landscape) and (min-width: 640px) and (max-height: 620px) {
+  .device-header,
+  .device-footer {
+    zoom: 0.55;
+  }
+  .screen-bezel {
+    padding: 6px;
+  }
+}
